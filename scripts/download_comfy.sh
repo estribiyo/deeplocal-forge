@@ -53,7 +53,7 @@ echo "━━━ comic.json ━━━━━━━━━━━━━━━━━�
 # Alternativa con nombre exacto (puede requerir cuenta CivitAI):
 #   https://civitai.com/api/download/models/288982
 download \
-    "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/main/Juggernaut-XL-RDPhoto2-Lightning_4S.safetensors" \
+    "https://huggingface.co/RunDiffusion/Juggernaut-XL-Lightning/blob/main/Juggernaut_RunDiffusionPhoto2_Lightning_4Steps.safetensors" \
     "${COMFY_PATH:-./comfy}/models/checkpoints/juggernautXL_ragnarokBy.safetensors"
 
 # ── ControlNet Canny SDXL (nodo 20: ControlNetLoader) ────────────────────────
