@@ -16,11 +16,8 @@ set -e
 
 export $(grep -v '^#' .env | xargs)
 
-if [ "${PROFILE_VAR}" == "gpu" ]; then
-    CONTAINER_NAME="Ollama-GPU"
-else
-    CONTAINER_NAME="Ollama-CPU"
-fi
+SERVICE_NAME="ollama-${PROFILE_VAR}"
+CONTAINER_NAME=$(docker ps --filter "label=com.docker.compose.service=${SERVICE_NAME}" --format "{{.Names}}" | head -n 1)
 
 echo "📦 Comprobando modelos en ${CONTAINER_NAME}..."
 MODELS=$(docker exec ${CONTAINER_NAME} ollama list 2>/dev/null || echo "")

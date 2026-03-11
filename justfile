@@ -114,12 +114,13 @@ setup-models:
     #!/bin/bash
     export $(grep -v '^#' .env | xargs)
 
-    if [ "${PROFILE_VAR}" == "gpu" ]; then
-        CONTAINER_NAME="Ollama-GPU"
-    else
-        CONTAINER_NAME="Ollama-CPU"
-    fi
+    # 1. Identificamos el nombre del servicio basándonos en el perfil detectado
+    SERVICE_NAME="ollama-${PROFILE_VAR}"
 
+    # 2. Buscamos el nombre REAL del contenedor que Docker Compose ha asignado
+    # Filtramos por la etiqueta interna que pone Compose automáticamente
+    CONTAINER_NAME=$(docker ps --filter "label=com.docker.compose.service=${SERVICE_NAME}" --format "{{ '{.Names}}' }}" | head -n 1)
+   
     echo "⏳ Esperando a que Ollama esté operativo..."
     until curl -sf http://localhost:11434/api/tags > /dev/null 2>&1; do
         sleep 3

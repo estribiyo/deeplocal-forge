@@ -18,6 +18,8 @@
 
 set -e
 
+export $(grep -v '^#' .env | xargs)
+
 echo "🔽 Descargando modelos ComfyUI..."
 
 # ─────────────────────────────────────────────
