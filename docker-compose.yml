@@ -2,9 +2,9 @@ x-comfyui-base: &comfyui-base
   image: ghcr.io/lecode-official/comfyui-docker:latest
   restart: unless-stopped
   volumes:
-    - ${COMFY_PATH:-./comfy}/models:/opt/comfyui/models:rw
-    - ${COMFY_PATH:-./comfy}/custom_nodes:/opt/comfyui/custom_nodes:rw
-    - ${COMFY_PATH:-./comfy}/output:/opt/comfyui/output:rw
+    - ${COMFY_PATH:-./data/comfy}/models:/opt/comfyui/models:rw
+    - ${COMFY_PATH:-./data/comfy}/custom_nodes:/opt/comfyui/custom_nodes:rw
+    - ${COMFY_PATH:-./data/comfy}/output:/opt/comfyui/output:rw
   environment:
     USER_ID: "${UID:-1000}"
     GROUP_ID: "${GID:-1000}"
@@ -116,12 +116,10 @@ networks:
 services:
   ollama:
     <<: *ollama-base
-    container_name: Ollama-CPU
     profiles: ["cpu"]
 
   ollama-gpu:
     <<: *ollama-base
-    container_name: Ollama-GPU
     profiles: ["gpu"]
     deploy:
       resources:
@@ -142,7 +140,6 @@ services:
     runtime: nvidia
 
   qdrant:
-    container_name: Qdrant
     image: qdrant/qdrant:latest
     volumes:
       - qdrant_data:/qdrant/storage
@@ -164,13 +161,11 @@ services:
   whisper-asr-cpu:
     <<: *whisper-base
     image: onerahmet/openai-whisper-asr-webservice:latest
-    container_name: WhisperASR-CPU
     profiles: ["cpu"]
 
   whisper-asr-gpu:
     <<: *whisper-base
     image: onerahmet/openai-whisper-asr-webservice:latest-gpu
-    container_name: WhisperASR-GPU
     profiles: ["gpu"]
     deploy:
       resources:
@@ -186,7 +181,6 @@ services:
   coqui-cpu:
     <<: *coqui-base
     image: ${COQUI_CPU_IMAGE:-ghcr.io/coqui-ai/tts-cpu}
-    container_name: CoquiTTS-CPU
     profiles: ["cpu"]
     command:
       - -c
@@ -195,7 +189,6 @@ services:
   coqui-gpu:
     <<: *coqui-base
     image: ${COQUI_GPU_IMAGE:-ghcr.io/coqui-ai/tts}
-    container_name: CoquiTTS-GPU
     profiles: ["gpu"]
     deploy:
       resources:
@@ -215,12 +208,10 @@ services:
 
   comfyui-cpu:
     <<: *comfyui-base
-    container_name: ComfyUI-CPU
     profiles: ["cpu"]
 
   comfyui-gpu:
     <<: *comfyui-base
-    container_name: ComfyUI-GPU
     profiles: ["gpu"]
     runtime: nvidia
     deploy:
@@ -243,7 +234,6 @@ services:
     build:
       context: ./assets/mcp/playwright
       dockerfile: Dockerfile
-    container_name: MCP-Playwright
     profiles: ["cpu", "gpu"]
     restart: unless-stopped
     networks:
@@ -260,7 +250,6 @@ services:
     build:
       context: ./assets/mcp/filesystem
       dockerfile: Dockerfile
-    container_name: MCP-Filesystem
     profiles: ["cpu", "gpu"]
     restart: unless-stopped
     volumes:
@@ -280,7 +269,6 @@ services:
     build:
       context: ./assets/mcp/memory
       dockerfile: Dockerfile
-    container_name: MCP-Memory
     profiles: ["cpu", "gpu"]
     restart: unless-stopped
     volumes:
@@ -301,7 +289,6 @@ services:
     build:
       context: ./assets/mcp/searxng
       dockerfile: Dockerfile
-    container_name: MCP-SearXNG
     profiles: ["mcp-optional"]
     restart: unless-stopped
     environment:
