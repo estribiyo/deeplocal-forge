@@ -13,12 +13,13 @@ x-comfyui-base: &comfyui-base
       aliases:
         - comfyui
   labels:
+    - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
     - "traefik.enable=true"
     - "traefik.http.routers.comfyui.rule=Host(`comfyui.${MAIN_DOMAIN}`)"
     - "traefik.http.routers.comfyui.entrypoints=websecure"
     - "traefik.http.routers.comfyui.tls.certresolver=step"
     - "traefik.http.services.comfyui.loadbalancer.server.port=8188"
-
+    
 x-ollama-base: &ollama-base
   image: ollama/ollama
   ports:
@@ -52,12 +53,13 @@ x-ollama-base: &ollama-base
       aliases:
         - ollama
   labels:
+    - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
     - "traefik.enable=true"
     - "traefik.http.routers.ollama.rule=Host(`ollama.${MAIN_DOMAIN}`)"
     - "traefik.http.routers.ollama.entrypoints=websecure"
     - "traefik.http.routers.ollama.tls.certresolver=step"
     - "traefik.http.services.ollama.loadbalancer.server.port=11434"
-
+    
 x-whisper-base: &whisper-base
   volumes:
     - whisper_models:/root/.cache/whisper
@@ -74,17 +76,17 @@ x-whisper-base: &whisper-base
     - ASR_DEVICE=cpu # Se sobrescribe en el servicio de GPU
     - ASR_MODEL_PATH=/root/.cache/whisper # Ruta dentro del contenedor donde se guardarán los modelos.
   labels:
+    - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
     - "traefik.enable=true"
     - "traefik.http.routers.stt.rule=Host(`stt.${MAIN_DOMAIN}`)"
     - "traefik.http.routers.stt.entrypoints=websecure"
     - "traefik.http.routers.stt.tls.certresolver=step"
     - "traefik.http.services.stt.loadbalancer.server.port=9000"
-
+    
 x-coqui-env: &coqui-env-base
   COQUI_DEVICE: cpu
   PYTHONUNBUFFERED: 1
   COQUI_TOS_AGREED: "1"
-
 x-coqui-base: &coqui-base
   networks:
     ai_network:
@@ -95,11 +97,13 @@ x-coqui-base: &coqui-base
   volumes:
     - tts_data:/root/.local/share/tts
   labels:
+    - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
     - "traefik.enable=true"
     - "traefik.http.routers.tts.rule=Host(`tts.${MAIN_DOMAIN}`)"
     - "traefik.http.routers.tts.entrypoints=websecure"
     - "traefik.http.routers.tts.tls.certresolver=step"
     - "traefik.http.services.tts.loadbalancer.server.port=5002"
+    
   entrypoint: /bin/bash
 
 volumes:
@@ -111,13 +115,13 @@ volumes:
 
 networks:
   ai_network:
+    name: ${AI_NETWORK_NAME:-ai_network}
     external: true
 
 services:
   ollama:
     <<: *ollama-base
     profiles: ["cpu"]
-
   ollama-gpu:
     <<: *ollama-base
     profiles: ["gpu"]
@@ -138,7 +142,6 @@ services:
       OLLAMA_NUM_PARALLEL: "1"
       NVIDIA_VISIBLE_DEVICES: all
     runtime: nvidia
-
   qdrant:
     image: qdrant/qdrant:latest
     volumes:
@@ -147,22 +150,22 @@ services:
     ports: # Opcional: si quieres exponerlo directamente
       - "6333:6333"
     networks:
-      ai_network:
+      ai_network:        
         aliases:
           - qdrant
     profiles: ["cpu", "gpu"]
     labels:
+      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
       - "traefik.enable=true"
       - "traefik.http.routers.qdrant.rule=Host(`qdrant.${MAIN_DOMAIN}`)"
       - "traefik.http.routers.qdrant.entrypoints=websecure"
       - "traefik.http.routers.qdrant.tls.certresolver=step"
       - "traefik.http.services.qdrant.loadbalancer.server.port=6333" # Puerto HTTP/GRPC
-
+      
   whisper-asr-cpu:
     <<: *whisper-base
     image: onerahmet/openai-whisper-asr-webservice:latest
     profiles: ["cpu"]
-
   whisper-asr-gpu:
     <<: *whisper-base
     image: onerahmet/openai-whisper-asr-webservice:latest-gpu
@@ -177,7 +180,6 @@ services:
     environment:
       - ASR_DEVICE=cuda
     runtime: nvidia
-
   coqui-cpu:
     <<: *coqui-base
     image: ${COQUI_CPU_IMAGE:-ghcr.io/coqui-ai/tts-cpu}
@@ -185,7 +187,6 @@ services:
     command:
       - -c
       - "tts-server --model_name ${TTS_MODEL} --use_cuda false"
-
   coqui-gpu:
     <<: *coqui-base
     image: ${COQUI_GPU_IMAGE:-ghcr.io/coqui-ai/tts}
@@ -205,11 +206,9 @@ services:
     command:
       - -c
       - "tts-server --model_name ${TTS_MODEL} --use_cuda true"
-
   comfyui-cpu:
     <<: *comfyui-base
     profiles: ["cpu"]
-
   comfyui-gpu:
     <<: *comfyui-base
     profiles: ["gpu"]
@@ -225,11 +224,9 @@ services:
       USER_ID: "${UID:-1000}"
       GROUP_ID: "${GID:-1000}"
       NVIDIA_VISIBLE_DEVICES: all
-
   # ══════════════════════════════════════════════════════════════════════════
   # MCP SERVERS — Herramientas para los LLM
   # ══════════════════════════════════════════════════════════════════════════
-
   mcp-playwright:
     build:
       context: ./assets/mcp/playwright
@@ -237,15 +234,16 @@ services:
     profiles: ["cpu", "gpu"]
     restart: unless-stopped
     networks:
-      ai_network:
+      ai_network:        
         aliases: [mcp-playwright]
     labels:
+      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
       - "traefik.enable=true"
       - "traefik.http.routers.mcp-playwright.rule=Host(`mcp-playwright.${MAIN_DOMAIN}`)"
       - "traefik.http.routers.mcp-playwright.entrypoints=websecure"
       - "traefik.http.routers.mcp-playwright.tls.certresolver=step"
       - "traefik.http.services.mcp-playwright.loadbalancer.server.port=8000"
-
+      
   mcp-filesystem:
     build:
       context: ./assets/mcp/filesystem
@@ -256,15 +254,16 @@ services:
       - ${MCP_FS_PATH_1:-./data/docs}:/mcp/fs/docs:rw
       - ${MCP_FS_PATH_2:-./data/exports}:/mcp/fs/exports:rw
     networks:
-      ai_network:
+      ai_network:        
         aliases: [mcp-filesystem]
     labels:
+      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
       - "traefik.enable=true"
       - "traefik.http.routers.mcp-filesystem.rule=Host(`mcp-filesystem.${MAIN_DOMAIN}`)"
       - "traefik.http.routers.mcp-filesystem.entrypoints=websecure"
       - "traefik.http.routers.mcp-filesystem.tls.certresolver=step"
       - "traefik.http.services.mcp-filesystem.loadbalancer.server.port=8000"
-
+      
   mcp-memory:
     build:
       context: ./assets/mcp/memory
@@ -276,15 +275,16 @@ services:
     environment:
       MEMORY_FILE_PATH: /mcp/memory/memory.json
     networks:
-      ai_network:
+      ai_network:        
         aliases: [mcp-memory]
     labels:
+      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
       - "traefik.enable=true"
       - "traefik.http.routers.mcp-memory.rule=Host(`mcp-memory.${MAIN_DOMAIN}`)"
       - "traefik.http.routers.mcp-memory.entrypoints=websecure"
       - "traefik.http.routers.mcp-memory.tls.certresolver=step"
       - "traefik.http.services.mcp-memory.loadbalancer.server.port=8000"
-
+      
   mcp-searxng:
     build:
       context: ./assets/mcp/searxng
@@ -294,11 +294,13 @@ services:
     environment:
       SEARXNG_URL: ${MCP_SEARXNG_URL}
     networks:
-      ai_network:
+      ai_network:        
         aliases: [mcp-searxng]
     labels:
+      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
       - "traefik.enable=true"
       - "traefik.http.routers.mcp-searxng.rule=Host(`mcp-searxng.${MAIN_DOMAIN}`)"
       - "traefik.http.routers.mcp-searxng.entrypoints=websecure"
       - "traefik.http.routers.mcp-searxng.tls.certresolver=step"
       - "traefik.http.services.mcp-searxng.loadbalancer.server.port=8000"
+      
