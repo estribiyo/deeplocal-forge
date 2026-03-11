@@ -1,0 +1,10 @@
+# r1-architect — Arquitecto del blueprint de desarrollo
+# Rol: planificación, diseño arquitectónico, razonamiento sobre tipos y ownership
+# Uso: Aider modo /architect
+# IMPORTANTE: No añadir SYSTEM prompt — R1 se degrada con system prompts extensos.
+#             El reasoning budget va en el mensaje de usuario, no aquí.
+
+FROM deepseek-r1:14b
+PARAMETER num_ctx    6144
+PARAMETER temperature 0.5
+PARAMETER num_keep   64
