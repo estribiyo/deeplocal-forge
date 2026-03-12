@@ -119,7 +119,7 @@ setup-models:
 
     # 2. Buscamos el nombre REAL del contenedor que Docker Compose ha asignado
     # Filtramos por la etiqueta interna que pone Compose automáticamente
-    CONTAINER_NAME=$(docker ps --filter "label=com.docker.compose.service=${SERVICE_NAME}" --format "{{ '{.Names}}' }}" | head -n 1)
+    CONTAINER_NAME=$(docker ps --filter "label=com.docker.compose.service=${SERVICE_NAME}" --format "{{ '{{.Names}}' }}" | head -n 1)
    
     echo "⏳ Esperando a que Ollama esté operativo..."
     until curl -sf http://localhost:11434/api/tags > /dev/null 2>&1; do
