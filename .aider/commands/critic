@@ -1,0 +1,11 @@
+/ask Critically review the last code modification. For each issue found, use exactly this format:
+
+Bug: <one-line description>
+File: <filename>
+Line: <line number or range>
+Explanation: <why it is a problem>
+Fix: <concrete suggestion>
+
+Focus on: hidden bugs or incorrect logic, performance regressions, incorrect ownership or lifetime assumptions (Rust), edge cases not covered, violations of CONSTRAINTS.md. Be concise. List only real issues, not style preferences.
+
+If no issues found, respond only: "No issues found."

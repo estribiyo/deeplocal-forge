@@ -1,0 +1,27 @@
+# Architecture Decisions
+
+> This file records architectural decisions for THIS project.
+> Update it after every significant technical decision.
+> Use: /update-arch in Aider to generate entries automatically after a session.
+
+---
+
+## How to add an entry
+
+```markdown
+## [Category]
+- **Decision**: [what was decided — specific, not vague]
+- **Reason**: [why this was chosen over alternatives]
+- **Date**: YYYY-MM-DD
+```
+
+Categories: Concurrency · Error Handling · Data Layer · API Design · Auth · Testing · Deployment
+
+---
+
+## [Add your project's decisions below this line]
+
+## Stack
+- **Decision**: [e.g., FastAPI for the backend API]
+- **Reason**: [e.g., async-first, Pydantic integration, automatic OpenAPI generation]
+- **Date**: YYYY-MM-DD

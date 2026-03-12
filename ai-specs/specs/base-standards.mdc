@@ -1,0 +1,167 @@
+# Base Development Standards
+# Single Source of Truth — all copilot configs reference this file
+# Stack: DeepLocal Forge · Rust · Python · JS/TS · React · PHP · HTML/CSS
+
+---
+
+## Core Principles
+
+1. **Baby steps, one task at a time** — never skip ahead or bundle unrelated changes
+2. **Test-Driven Development** — write a failing test before writing implementation code
+3. **Root cause before fix** — never patch a symptom without understanding its origin
+4. **Explicit over implicit** — no magic, no silent assumptions in code or architecture
+5. **Local-first** — no external API calls, no cloud dependencies in the core stack
+6. **English only** — all code, comments, commit messages, and documentation in English
+7. **Verify before declaring done** — run the full pipeline before closing a task
+
+---
+
+## Workflow: Spec-Driven Development
+
+### For new projects (Model B — AI-assisted spec)
+
+```
+1. /enrich-us  <ticket>        → enrich user story with acceptance criteria
+2. /plan-ticket <ticket>       → generate implementation plan in ai-specs/changes/
+3. /develop    @<ticket>.md    → implement following the plan precisely
+```
+
+### For mature projects (Model A — human-written spec)
+
+```
+1. Human writes spec in ai-specs/specs/ (api-spec.yml, data-model.md)
+2. /add ai-specs/specs/base-standards.mdc ARCHITECTURE.md CONSTRAINTS.md
+3. /architect  [goal with reasoning budget]
+4. /develop    [implement from architect output]
+```
+
+---
+
+## Pre-LLM Pipeline (run before every /architect or /ask)
+
+Each ecosystem has its own pipeline. Run the one matching the project:
+
+### Rust
+```bash
+cargo fmt && cargo clippy --fix --allow-dirty && cargo check
+```
+
+### Python
+```bash
+ruff format . && ruff check --fix . && mypy .
+```
+
+### PHP
+```bash
+php-cs-fixer fix && phpstan analyse --level=6
+```
+
+### JavaScript / TypeScript
+```bash
+prettier --write . && eslint --fix . && tsc --noEmit
+```
+
+> Rule: Run the pipeline first. The LLM only sees problems that tools cannot solve alone.
+
+---
+
+## Code Quality Standards
+
+### All languages
+- All public APIs must have documentation/docstrings
+- Error handling must be explicit — no silent swallowing of errors
+- No TODO or FIXME in committed code unless tracked in a ticket
+- Commits must be atomic and descriptive (imperative mood: "Add", "Fix", "Refactor")
+
+### Rust
+- No `unsafe` without explicit written justification in a code comment
+- Prefer iterators over manual loops
+- No `unwrap()` in production paths — use `?` or explicit error handling
+- Async: use `tokio`, not `async-std`
+- Shared state: `Arc<Mutex<T>>` for threads; `Rc<RefCell<T>>` only in single-thread contexts
+
+### Python
+- Type hints required on all function signatures (`mypy --strict` must pass)
+- Use `Pydantic` for data validation at boundaries (API input/output, config)
+- Prefer `pathlib.Path` over `os.path`
+- Async: use `asyncio`; do not mix sync and async without explicit bridging
+
+### TypeScript / JavaScript
+- TypeScript strict mode (`"strict": true` in tsconfig)
+- No `any` — use `unknown` and narrow, or define proper types
+- React: hooks must follow eslint-plugin-react-hooks rules
+- State management: local state first; lift only when necessary
+
+### PHP
+- PSR-12 style enforced by php-cs-fixer
+- Declare types on all method signatures
+- No procedural code in new files — use classes and namespaces
+- PHPStan level 6 minimum
+
+---
+
+## Testing Standards
+
+| Layer          | Minimum coverage | Framework (by language)                     |
+|----------------|-----------------|---------------------------------------------|
+| Unit           | 90%             | cargo test / pytest / phpunit / vitest      |
+| Integration    | Key paths       | cargo test --test / pytest / phpunit        |
+| E2E (optional) | Happy path      | playwright (via mcp-playwright in stack)    |
+
+- Write tests before implementation (TDD)
+- Each test must have one clear assertion and a descriptive name
+- Mocks allowed only at system boundaries (HTTP, DB, filesystem)
+
+---
+
+## Architecture Memory Files
+
+Every project using this stack must have these two files at its root:
+
+**`ARCHITECTURE.md`** — records adopted technical decisions:
+```markdown
+# Architecture Decisions
+## [Category]
+- Decision: [what was decided]
+- Reason: [why]
+- Date: [YYYY-MM-DD]
+```
+
+**`CONSTRAINTS.md`** — records hard constraints:
+```markdown
+# Project Constraints
+- [constraint] — [reason]
+```
+
+> Always `/add ARCHITECTURE.md CONSTRAINTS.md` at the start of each design session.
+> Update after every significant architectural change.
+
+---
+
+## Critic Pass (mandatory after significant changes)
+
+Run after any refactor, API change, or concurrency modification:
+
+```
+/ask
+Critically review the last code modification.
+For each issue found, use exactly this format:
+
+Bug: <one-line description>
+File: <filename>
+Line: <line number or range>
+Explanation: <why it is a problem>
+Fix: <concrete suggestion>
+
+Focus on: hidden bugs, performance regressions, incorrect ownership/lifetime
+assumptions (Rust), edge cases not covered, violations of CONSTRAINTS.md.
+If no issues found, respond only: "No issues found."
+```
+
+| Change type                        | Critic Pass |
+|------------------------------------|-------------|
+| Formatting, rename, comments       | Not needed  |
+| New function with defined signature | Recommended |
+| Module refactor or public API       | Mandatory   |
+| Concurrency logic change           | Mandatory   |
+| Error handling modification        | Mandatory   |

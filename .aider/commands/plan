@@ -1,0 +1,17 @@
+/architect Think briefly (max 6 steps). Focus on the final plan.
+
+Generate a complete implementation plan for the following ticket. Output markdown formatted for saving to ai-specs/changes/<TICKET-ID>_<layer>.md
+
+The plan must include:
+1. Context: what this feature does and why
+2. Architecture impact: affected modules, new modules, new dependencies
+3. Implementation steps (numbered, ordered, each with a success criterion)
+4. Test specifications: unit tests + integration tests (list each test by name and what it verifies)
+5. Error handling strategy (HTTP codes, error messages)
+6. Definition of Done checklist
+
+Constraints: read CONSTRAINTS.md
+Standards: read ai-specs/specs/base-standards.mdc
+Do not write implementation code — plan only.
+
+Ticket:

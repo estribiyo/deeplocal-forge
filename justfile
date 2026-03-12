@@ -181,3 +181,72 @@ up-mcp-optional:
     docker compose --profile mcp-optional up --build -d
     @echo "✅ Servidores MCP opcionales activos"
     @echo "   http://mcp-searxng.${MAIN_DOMAIN}     — búsqueda web (requiere MCP_SEARXNG_URL)"
+
+# `just up-rag` — Ollama + Qdrant + Langflow + n8n (modo RAG / bot de consultas)
+up-rag:
+    @just prepare-environment
+    export $(grep -v '^#' .env | xargs) && \
+    docker compose --profile ${PROFILE_VAR} down && \
+    docker compose up ollama-${PROFILE_VAR} qdrant langflow-${PROFILE_VAR} n8n-workflow --build -d
+    @echo "✅ Modo RAG activo: Ollama + Qdrant + Langflow + n8n"
+
+# `just init-project NAME` — inicializa un proyecto nuevo con la estructura spec-driven
+# Uso: just init-project mi-proyecto
+# Crea: ARCHITECTURE.md, CONSTRAINTS.md, ai-specs/, .aider/commands/, skills/ (symlink)
+init-project name:
+    #!/bin/bash
+    set -e
+    PROJECT_DIR="../{{name}}"
+
+    if [ -d "$PROJECT_DIR" ]; then
+        echo "❌ El directorio $PROJECT_DIR ya existe. Elige otro nombre."
+        exit 1
+    fi
+
+    echo "🚀 Inicializando proyecto: {{name}}"
+    mkdir -p "$PROJECT_DIR/ai-specs/specs"
+    mkdir -p "$PROJECT_DIR/ai-specs/changes"
+    mkdir -p "$PROJECT_DIR/.aider/commands"
+
+    # Copiar plantillas de specs
+    cp ai-specs/specs/base-standards.mdc    "$PROJECT_DIR/ai-specs/specs/"
+    cp ai-specs/specs/backend-standards.mdc "$PROJECT_DIR/ai-specs/specs/"
+    cp ai-specs/specs/frontend-standards.mdc "$PROJECT_DIR/ai-specs/specs/"
+    cp ai-specs/specs/documentation-standards.mdc "$PROJECT_DIR/ai-specs/specs/"
+    cp ai-specs/specs/api-spec.yml          "$PROJECT_DIR/ai-specs/specs/"
+    cp ai-specs/specs/data-model.md         "$PROJECT_DIR/ai-specs/specs/"
+    cp ai-specs/specs/prompts.md            "$PROJECT_DIR/ai-specs/specs/"
+
+    # Crear ARCHITECTURE.md y CONSTRAINTS.md desde plantillas
+    cp ai-specs/specs/ARCHITECTURE.md.template "$PROJECT_DIR/ARCHITECTURE.md"
+    cp ai-specs/specs/CONSTRAINTS.md.template  "$PROJECT_DIR/CONSTRAINTS.md"
+
+    # Copiar configuraciones de agentes
+    cp AGENTS.md   "$PROJECT_DIR/"
+    cp CLAUDE.md   "$PROJECT_DIR/"
+    cp GEMINI.md   "$PROJECT_DIR/"
+    cp codex.md    "$PROJECT_DIR/"
+
+    # Copiar comandos de Aider
+    cp .aider/commands/prevalidate  "$PROJECT_DIR/.aider/commands/"
+    cp .aider/commands/critic       "$PROJECT_DIR/.aider/commands/"
+    cp .aider/commands/enrich-us    "$PROJECT_DIR/.aider/commands/"
+    cp .aider/commands/plan         "$PROJECT_DIR/.aider/commands/"
+    cp .aider/commands/update-arch  "$PROJECT_DIR/.aider/commands/"
+
+    # Copiar skills (copia completa — no symlinks, para que el proyecto sea portable)
+    cp -r skills "$PROJECT_DIR/"
+
+    echo ""
+    echo "✅ Proyecto '{{name}}' inicializado en $PROJECT_DIR"
+    echo ""
+    echo "📋 Próximos pasos:"
+    echo "   1. cd $PROJECT_DIR"
+    echo "   2. Edita ARCHITECTURE.md con las decisiones iniciales de tu stack"
+    echo "   3. Edita CONSTRAINTS.md con las restricciones del proyecto"
+    echo "   4. Edita ai-specs/specs/api-spec.yml con tus endpoints reales"
+    echo "   5. Inicia Aider: aider (leerá .aider/commands/ automáticamente)"
+    echo ""
+    echo "💡 Primer flujo recomendado:"
+    echo "   /enrich-us [describe tu user story]"
+    echo "   /plan [describe el ticket]"

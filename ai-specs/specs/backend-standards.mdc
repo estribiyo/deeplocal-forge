@@ -1,0 +1,110 @@
+# Backend Development Standards
+# Extends base-standards.mdc — do not duplicate rules defined there
+
+---
+
+## API Design
+
+### REST Conventions
+- Resource names: plural nouns (`/users`, `/projects`, not `/user`, `/getProjects`)
+- HTTP verbs as intended: GET (read), POST (create), PUT (replace), PATCH (partial update), DELETE
+- Status codes must be semantically correct:
+  - `200 OK` — successful read or update
+  - `201 Created` — successful creation (include `Location` header)
+  - `204 No Content` — successful delete
+  - `400 Bad Request` — client validation error (include field-level detail)
+  - `401 Unauthorized` — missing or invalid auth
+  - `403 Forbidden` — authenticated but not authorized
+  - `404 Not Found` — resource does not exist
+  - `409 Conflict` — state conflict (duplicate, concurrent modification)
+  - `422 Unprocessable Entity` — semantically invalid input
+  - `500 Internal Server Error` — never expose stack traces in production
+
+### Error Response Format (all APIs)
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Human-readable description",
+    "fields": [
+      { "field": "email", "message": "Invalid email format" }
+    ]
+  }
+}
+```
+
+### Versioning
+- URL versioning: `/api/v1/`, `/api/v2/`
+- Never break a published version without a deprecation period (minimum 2 sprints)
+
+---
+
+## Database
+
+- Migrations must be reversible (up + down)
+- No raw SQL strings with string interpolation — always use parameterized queries
+- Indexes required on: foreign keys, columns used in WHERE/ORDER BY in frequent queries
+- Soft deletes preferred over hard deletes for user-facing data
+- Timestamps: always store in UTC; always include `created_at`, `updated_at`
+
+---
+
+## Security
+
+- Never log passwords, tokens, or PII
+- Validate and sanitize all input at the boundary (before business logic)
+- Rate limiting on all public endpoints
+- Authentication via JWT or session — never roll custom crypto
+- Secrets from environment variables only — never hardcoded, never in version control
+
+---
+
+## OpenAPI Specification
+
+Every backend service must maintain an `ai-specs/specs/api-spec.yml`:
+
+```yaml
+openapi: "3.0.3"
+info:
+  title: "[Service Name] API"
+  version: "1.0.0"
+  description: "[What this service does]"
+paths:
+  /resource:
+    get:
+      summary: "List resources"
+      # ... full spec
+```
+
+> Keep the spec in sync with implementation. The spec is the contract — not the code.
+
+---
+
+## Python / FastAPI Specifics
+
+```python
+# Correct: typed endpoint with Pydantic models
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+
+class ItemCreate(BaseModel):
+    name: str
+    description: str | None = None
+
+@app.post("/items", status_code=201, response_model=ItemResponse)
+async def create_item(item: ItemCreate) -> ItemResponse:
+    ...
+```
+
+- One router per domain — no mega-routers
+- Dependency injection for DB sessions and auth (`Depends()`)
+- Background tasks via `BackgroundTasks` or Celery — not threads
+
+---
+
+## Rust / Axum Specifics
+
+- One module per domain (`auth`, `items`, `users`)
+- Handler functions must not contain business logic — delegate to service layer
+- Use `thiserror` for library errors, `anyhow` for application errors
+- All DB queries in repository layer — handlers never touch the DB directly

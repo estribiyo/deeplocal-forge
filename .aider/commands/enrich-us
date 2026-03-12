@@ -1,0 +1,12 @@
+/ask Enrich the following user story. Add:
+- Detailed acceptance criteria in Given/When/Then format
+- Edge cases and validation rules
+- Technical considerations for the current stack
+- Testing scenarios (unit, integration, E2E where relevant)
+- Non-functional requirements (performance, security, accessibility)
+- Definition of Done checklist
+
+Keep everything grounded in the existing codebase. Do not invent features not implied by the story.
+Do not write implementation code.
+
+User Story:

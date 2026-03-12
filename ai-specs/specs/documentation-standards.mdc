@@ -1,0 +1,167 @@
+# Documentation Standards
+# Extends base-standards.mdc — do not duplicate rules defined there
+
+---
+
+## Principle: Documentation as Code
+
+Documentation lives in the repository alongside the code it describes.
+Out-of-date documentation is worse than no documentation — treat doc updates as part of the Definition of Done.
+
+---
+
+## Code Documentation
+
+### What to document
+- All public functions, methods, and types — always
+- Non-obvious implementation decisions — always
+- Complex algorithms — always with a reference or explanation
+- What NOT to document: code that already reads clearly
+
+### Format by language
+
+**Python (docstrings)**
+```python
+def calculate_discount(price: float, rate: float) -> float:
+    """Calculate the discounted price.
+
+    Args:
+        price: Original price in euros, must be >= 0.
+        rate: Discount rate between 0.0 and 1.0.
+
+    Returns:
+        Discounted price rounded to 2 decimal places.
+
+    Raises:
+        ValueError: If rate is outside [0.0, 1.0].
+    """
+```
+
+**Rust (doc comments)**
+```rust
+/// Calculates the discounted price.
+///
+/// # Arguments
+/// * `price` - Original price in euros, must be >= 0.0
+/// * `rate` - Discount rate in [0.0, 1.0]
+///
+/// # Errors
+/// Returns `Err` if `rate` is outside the valid range.
+pub fn calculate_discount(price: f64, rate: f64) -> Result<f64, PricingError> {
+```
+
+**TypeScript (JSDoc)**
+```typescript
+/**
+ * Calculates the discounted price.
+ * @param price - Original price in euros, must be >= 0
+ * @param rate - Discount rate between 0 and 1
+ * @returns Discounted price rounded to 2 decimal places
+ * @throws {RangeError} If rate is outside [0, 1]
+ */
+function calculateDiscount(price: number, rate: number): number {
+```
+
+---
+
+## API Documentation
+
+Every endpoint must be documented in `ai-specs/specs/api-spec.yml` before implementation.
+
+Required fields per endpoint:
+- `summary` — one-line description
+- `description` — full behavior including edge cases
+- `requestBody` — schema with examples
+- `responses` — all possible status codes with schemas
+- `tags` — for grouping in documentation UI
+
+---
+
+## Architecture Memory Files
+
+### `ARCHITECTURE.md` — records decisions
+
+```markdown
+# Architecture Decisions
+
+## Concurrency (Rust)
+- **Decision**: Use `Arc<Mutex<T>>` for shared state across threads
+- **Reason**: Simpler lifetime reasoning than `RwLock` for this workload pattern
+- **Date**: 2025-01-15
+
+## Error handling (Python)
+- **Decision**: Use custom exception classes per domain, not generic `Exception`
+- **Reason**: Allows structured error handling at API boundary
+- **Date**: 2025-01-20
+```
+
+### `CONSTRAINTS.md` — records hard limits
+
+```markdown
+# Project Constraints
+
+- No external API calls from the core service — all integrations via adapters
+- No `unsafe` Rust without written justification in a comment above the block
+- All DB migrations must be reversible
+- Test coverage must not drop below 85% in CI
+```
+
+---
+
+## Commit Messages
+
+Format: `<type>(<scope>): <imperative description>`
+
+Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`
+
+```
+feat(items): add pagination to item list endpoint
+fix(auth): correct token expiry calculation for DST edge case
+refactor(parser): extract tokenizer into separate module
+docs(api): update OpenAPI spec for /users endpoint
+```
+
+- Maximum 72 characters for the subject line
+- Body (optional): explain *why*, not *what* (the diff shows what)
+- Never: "fix bug", "update", "WIP", "changes"
+
+---
+
+## Feature Implementation Plans (`ai-specs/changes/`)
+
+Each planned feature gets a file: `ai-specs/changes/<TICKET-ID>_<layer>.md`
+
+### Template
+
+```markdown
+# <TICKET-ID>: <Feature Name>
+**Layer**: backend | frontend | fullstack
+**Status**: planned | in-progress | completed
+
+## Context
+Brief description of what this feature does and why.
+
+## Architecture Impact
+- What existing modules are affected
+- New modules to be created
+- Dependencies introduced
+
+## Implementation Steps
+1. [ ] Step description — expected outcome
+2. [ ] Step description — expected outcome
+...
+
+## Test Specifications
+### Unit tests
+- [ ] Test: what it verifies
+### Integration tests
+- [ ] Test: what it verifies
+
+## Definition of Done
+- [ ] All tests pass (unit + integration)
+- [ ] Pre-LLM pipeline passes (fmt + lint + types)
+- [ ] Critic Pass completed
+- [ ] ARCHITECTURE.md updated if decisions were made
+- [ ] API spec updated if endpoints changed
+- [ ] PR description references this plan
+```

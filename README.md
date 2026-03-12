@@ -29,18 +29,40 @@
 ```
 deeplocal-forge/
 ├── assets/
-│   ├── ollama/          # Modelfiles — r1-architect, qwen-editor, rag-bot
-│   └── mcp/             # Dockerfiles de los servidores MCP
+│   ├── ollama/              # Modelfiles — r1-architect, qwen-editor, rag-bot
+│   └── mcp/                 # Dockerfiles de los servidores MCP
+├── ai-specs/                # Especificaciones y estándares (fuente de verdad)
+│   ├── specs/
+│   │   ├── base-standards.mdc          # Reglas core (todos los agentes la leen)
+│   │   ├── backend-standards.mdc
+│   │   ├── frontend-standards.mdc
+│   │   ├── documentation-standards.mdc
+│   │   ├── api-spec.yml                # Plantilla OpenAPI 3.0
+│   │   ├── data-model.md
+│   │   ├── prompts.md                  # Prompts reutilizables
+│   │   ├── ARCHITECTURE.md.template
+│   │   └── CONSTRAINTS.md.template
+│   └── changes/             # Planes de implementación por ticket
+├── skills/                  # Skills de agente (de skills.sh)
+│   ├── process/             # Debugging, TDD, verificación, multiagentes
+│   ├── quality/             # API design, seguridad, code review
+│   ├── languages/           # Python, TypeScript, Node.js
+│   └── frontend/            # React, Next.js
+├── .aider/
+│   └── commands/            # Comandos personalizados de Aider
+│       ├── prevalidate      # Pipeline pre-LLM (detecta lenguaje automáticamente)
+│       ├── critic           # Critic Pass estandarizado
+│       ├── enrich-us        # Enriquecer una user story
+│       ├── plan             # Generar plan de implementación
+│       └── update-arch      # Actualizar ARCHITECTURE.md
 ├── scripts/
-│   ├── download_ollama.sh   # Descarga modelos base en el contenedor
-│   └── download_comfy.sh    # Prepara directorios de modelos ComfyUI
 ├── doc/
-│   └── blueprint.md     # Especificación técnica completa
+│   └── blueprint.md
+├── AGENTS.md / CLAUDE.md / GEMINI.md / codex.md   # Config por agente
 ├── docker-compose.yml
 ├── justfile
 └── .env.example
 ```
-
 ---
 
 ## 🚀 Setup inicial

@@ -1,0 +1,19 @@
+/run echo "🔍 Detectando lenguaje del proyecto..." && \
+if [ -f Cargo.toml ]; then \
+  echo "🦀 Rust — cargo fmt + clippy + check" && \
+  cargo fmt && cargo clippy --fix --allow-dirty && cargo check; \
+elif [ -f pyproject.toml ] || [ -f setup.py ] || [ -f requirements.txt ]; then \
+  echo "🐍 Python — ruff + mypy" && \
+  ruff format . && ruff check --fix . && mypy .; \
+elif [ -f tsconfig.json ]; then \
+  echo "📘 TypeScript — prettier + eslint + tsc" && \
+  prettier --write . && eslint --fix . && tsc --noEmit; \
+elif [ -f package.json ]; then \
+  echo "📦 JavaScript — prettier + eslint" && \
+  prettier --write . && eslint --fix .; \
+elif [ -f composer.json ]; then \
+  echo "🐘 PHP — php-cs-fixer + phpstan" && \
+  php-cs-fixer fix && phpstan analyse --level=6; \
+else \
+  echo "⚠️  Lenguaje no detectado. Ejecuta el pipeline manualmente."; \
+fi && echo "✅ Pre-validación completada"

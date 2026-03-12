@@ -1,0 +1,12 @@
+/ask Review the changes made in this session. Identify any architectural decisions that should be recorded in ARCHITECTURE.md.
+
+For each decision, produce a markdown entry in this exact format:
+## [Category]
+- **Decision**: [what was decided]
+- **Reason**: [why — not what]
+- **Date**: [today's date]
+
+Only include real architectural decisions — not obvious implementation details, not formatting choices.
+If no decisions were made, respond only: "No architectural decisions to record."
+
+Then append the entries to ARCHITECTURE.md.

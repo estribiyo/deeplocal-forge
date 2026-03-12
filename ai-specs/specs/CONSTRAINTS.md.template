@@ -1,0 +1,45 @@
+# Project Constraints
+
+> This file records hard constraints for THIS project.
+> Constraints are non-negotiable rules that the LLM must never violate.
+> Add the pre-LLM pipeline command for this project at the bottom.
+
+---
+
+## How to add a constraint
+
+```markdown
+- [what is forbidden or required] — [reason]
+```
+
+---
+
+## Universal Constraints (inherited from base-standards.mdc)
+
+- No TODO or FIXME in committed code without a corresponding ticket
+- All public APIs must have documentation
+- Error handling must be explicit — no silent swallowing
+- Commits must be atomic and descriptive
+- English only in code, comments, and commit messages
+
+---
+
+## Project-Specific Constraints
+
+> Replace the examples below with your actual constraints.
+
+- [e.g., No external API calls from the core service — use adapter pattern]
+- [e.g., Test coverage must not drop below 85%]
+- [e.g., No raw SQL — use the ORM exclusively]
+- [e.g., All user-facing strings must be i18n-ready from day one]
+
+---
+
+## Pre-LLM Pipeline for This Project
+
+```bash
+# Run this before every /architect or /ask
+[paste the pipeline command for your language from base-standards.mdc]
+```
+
+In Aider: `/prevalidate`

@@ -1,0 +1,142 @@
+# Frontend Development Standards
+# Extends base-standards.mdc — do not duplicate rules defined there
+
+---
+
+## React Component Patterns
+
+### Component structure (single file)
+```tsx
+// 1. Imports — external, then internal, then types
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import type { Item } from "@/types/item"
+
+// 2. Types local to this component
+interface ItemCardProps {
+  item: Item
+  onSelect: (id: string) => void
+}
+
+// 3. Component — named export, arrow function
+export const ItemCard = ({ item, onSelect }: ItemCardProps) => {
+  // 4. Hooks first
+  const [expanded, setExpanded] = useState(false)
+
+  // 5. Derived values
+  const displayName = item.name.trim() || "Unnamed"
+
+  // 6. Handlers — prefixed with handle
+  const handleClick = () => {
+    setExpanded(!expanded)
+    onSelect(item.id)
+  }
+
+  // 7. JSX
+  return (
+    <div onClick={handleClick}>
+      <h3>{displayName}</h3>
+      {expanded && <p>{item.description}</p>}
+    </div>
+  )
+}
+```
+
+### Rules
+- One component per file; filename matches export name
+- No default exports (named exports are easier to refactor and search)
+- Props interfaces defined in the same file unless shared across 3+ components
+- Avoid prop drilling beyond 2 levels — use context or state management
+
+---
+
+## Hooks
+
+- `useEffect` must declare all dependencies — never suppress the lint rule
+- Custom hooks live in `hooks/` directory, prefixed with `use`
+- No logic inside JSX — extract to variables or handlers above the return
+- Async in hooks: use `useEffect` with cleanup, or a data-fetching library
+
+```tsx
+// Correct: explicit dependency array, cleanup
+useEffect(() => {
+  let cancelled = false
+  fetchData(id).then(data => {
+    if (!cancelled) setData(data)
+  })
+  return () => { cancelled = true }
+}, [id])
+```
+
+---
+
+## State Management
+
+| Scope             | Solution                              |
+|-------------------|---------------------------------------|
+| Component-local   | `useState`, `useReducer`              |
+| Shared UI state   | React Context (read-heavy, low churn) |
+| Server state      | React Query / TanStack Query          |
+| Complex client    | Zustand (flat store, no boilerplate)  |
+
+- No Redux unless the team already uses it and it cannot be replaced
+- Context for state that changes rarely; TanStack Query for anything from the server
+
+---
+
+## Styling
+
+- Tailwind CSS utility classes — no inline `style={}` except for dynamic values
+- No CSS-in-JS (styled-components, emotion) in new code
+- Component variants via `class-variance-authority` (cva) — not ternary chains
+
+---
+
+## Accessibility
+
+- All interactive elements must be keyboard accessible
+- Images must have `alt` text (empty string `alt=""` for decorative images)
+- Form inputs must have associated `<label>` elements
+- Color contrast: minimum WCAG AA (4.5:1 for text)
+
+---
+
+## File Structure (React project)
+
+```
+src/
+├── components/        # Shared/reusable components
+│   └── ui/            # Primitive UI components (Button, Input...)
+├── features/          # Feature-based modules
+│   └── items/
+│       ├── ItemCard.tsx
+│       ├── ItemList.tsx
+│       ├── hooks/
+│       │   └── useItems.ts
+│       └── types.ts
+├── hooks/             # App-wide custom hooks
+├── lib/               # Pure utilities (no React)
+├── types/             # Shared TypeScript types
+└── api/               # API client functions
+```
+
+---
+
+## Build and Quality
+
+```bash
+# Type check — must pass with zero errors
+tsc --noEmit
+
+# Lint and fix
+eslint --fix .
+
+# Format
+prettier --write .
+
+# Tests
+vitest run
+```
+
+- No `@ts-ignore` or `@ts-expect-error` without a comment explaining why
+- Bundle size: no dependency added without justification (check with `bundlephobia`)
