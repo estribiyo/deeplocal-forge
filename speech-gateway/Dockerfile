@@ -2,11 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Copiamos el código
+COPY ./main.py ./requirements.txt .
+
 # Instalamos dependencias mínimas
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copiamos el código
-COPY ./main.py .
 
 # Exponemos el puerto
 EXPOSE 8000

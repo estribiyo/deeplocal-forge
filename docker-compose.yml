@@ -307,8 +307,9 @@ services:
   speech-gateway:
     build: ./speech-gateway
     container_name: speech-gateway
+    profiles: ["cpu", "gpu"]
     networks:
-      - ai-network
+      - ai_network
     environment:
       # URLs internas de tu stack de Docker
       - WHISPER_URL=http://whisper:9000/asr
