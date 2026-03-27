@@ -316,13 +316,7 @@ services:
       - OLLAMA_URL=http://ollama:11434
       - COQUI_URL=http://coqui-tts:5002
       - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-qwen2.5:7b-instruct}
-    ports:
-      - "8000:8000"
     restart: unless-stopped
-    labels:
-      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
-      - "traefik.enable=true"
-      - "traefik.http.routers.speech-gateway.rule=Host(`sg.${MAIN_DOMAIN}`)"
-      - "traefik.http.routers.speech-gateway.entrypoints=websecure"
-      - "traefik.http.routers.speech-gateway.tls.certresolver=step"
-      - "traefik.http.services.speech-gateway.loadbalancer.server.port=8000"
+    ports:
+      - 10400:10400
+      - 10420:10420
