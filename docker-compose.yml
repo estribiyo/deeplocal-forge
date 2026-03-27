@@ -19,7 +19,7 @@ x-comfyui-base: &comfyui-base
     - "traefik.http.routers.comfyui.entrypoints=websecure"
     - "traefik.http.routers.comfyui.tls.certresolver=step"
     - "traefik.http.services.comfyui.loadbalancer.server.port=8188"
-    
+
 x-ollama-base: &ollama-base
   image: ollama/ollama
   ports:
@@ -59,7 +59,7 @@ x-ollama-base: &ollama-base
     - "traefik.http.routers.ollama.entrypoints=websecure"
     - "traefik.http.routers.ollama.tls.certresolver=step"
     - "traefik.http.services.ollama.loadbalancer.server.port=11434"
-    
+
 x-whisper-base: &whisper-base
   volumes:
     - whisper_models:/root/.cache/whisper
@@ -82,7 +82,7 @@ x-whisper-base: &whisper-base
     - "traefik.http.routers.stt.entrypoints=websecure"
     - "traefik.http.routers.stt.tls.certresolver=step"
     - "traefik.http.services.stt.loadbalancer.server.port=9000"
-    
+
 x-coqui-env: &coqui-env-base
   COQUI_DEVICE: cpu
   PYTHONUNBUFFERED: 1
@@ -103,7 +103,7 @@ x-coqui-base: &coqui-base
     - "traefik.http.routers.tts.entrypoints=websecure"
     - "traefik.http.routers.tts.tls.certresolver=step"
     - "traefik.http.services.tts.loadbalancer.server.port=5002"
-    
+
   entrypoint: /bin/bash
 
 volumes:
@@ -150,7 +150,7 @@ services:
     ports: # Opcional: si quieres exponerlo directamente
       - "6333:6333"
     networks:
-      ai_network:        
+      ai_network:
         aliases:
           - qdrant
     profiles: ["cpu", "gpu"]
@@ -161,7 +161,7 @@ services:
       - "traefik.http.routers.qdrant.entrypoints=websecure"
       - "traefik.http.routers.qdrant.tls.certresolver=step"
       - "traefik.http.services.qdrant.loadbalancer.server.port=6333" # Puerto HTTP/GRPC
-      
+
   whisper-asr-cpu:
     <<: *whisper-base
     image: onerahmet/openai-whisper-asr-webservice:latest
@@ -234,7 +234,7 @@ services:
     profiles: ["cpu", "gpu"]
     restart: unless-stopped
     networks:
-      ai_network:        
+      ai_network:
         aliases: [mcp-playwright]
     labels:
       - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
@@ -243,7 +243,7 @@ services:
       - "traefik.http.routers.mcp-playwright.entrypoints=websecure"
       - "traefik.http.routers.mcp-playwright.tls.certresolver=step"
       - "traefik.http.services.mcp-playwright.loadbalancer.server.port=8000"
-      
+
   mcp-filesystem:
     build:
       context: ./assets/mcp/filesystem
@@ -254,7 +254,7 @@ services:
       - ${MCP_FS_PATH_1:-./data/docs}:/mcp/fs/docs:rw
       - ${MCP_FS_PATH_2:-./data/exports}:/mcp/fs/exports:rw
     networks:
-      ai_network:        
+      ai_network:
         aliases: [mcp-filesystem]
     labels:
       - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
@@ -263,7 +263,7 @@ services:
       - "traefik.http.routers.mcp-filesystem.entrypoints=websecure"
       - "traefik.http.routers.mcp-filesystem.tls.certresolver=step"
       - "traefik.http.services.mcp-filesystem.loadbalancer.server.port=8000"
-      
+
   mcp-memory:
     build:
       context: ./assets/mcp/memory
@@ -275,7 +275,7 @@ services:
     environment:
       MEMORY_FILE_PATH: /mcp/memory/memory.json
     networks:
-      ai_network:        
+      ai_network:
         aliases: [mcp-memory]
     labels:
       - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
@@ -284,7 +284,7 @@ services:
       - "traefik.http.routers.mcp-memory.entrypoints=websecure"
       - "traefik.http.routers.mcp-memory.tls.certresolver=step"
       - "traefik.http.services.mcp-memory.loadbalancer.server.port=8000"
-      
+
   mcp-searxng:
     build:
       context: ./assets/mcp/searxng
@@ -294,7 +294,7 @@ services:
     environment:
       SEARXNG_URL: ${MCP_SEARXNG_URL}
     networks:
-      ai_network:        
+      ai_network:
         aliases: [mcp-searxng]
     labels:
       - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
@@ -303,4 +303,25 @@ services:
       - "traefik.http.routers.mcp-searxng.entrypoints=websecure"
       - "traefik.http.routers.mcp-searxng.tls.certresolver=step"
       - "traefik.http.services.mcp-searxng.loadbalancer.server.port=8000"
-      
+
+  speech-gateway:
+    build: ./speech-gateway
+    container_name: speech-gateway
+    networks:
+      - ai-network
+    environment:
+      # URLs internas de tu stack de Docker
+      - WHISPER_URL=http://whisper:9000/asr
+      - OLLAMA_URL=http://ollama:11434
+      - COQUI_URL=http://coqui-tts:5002
+      - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-qwen2.5:7b-instruct}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    labels:
+      - "traefik.docker.network=${AI_NETWORK_NAME:-ai_network}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.speech-gateway.rule=Host(`sg.${MAIN_DOMAIN}`)"
+      - "traefik.http.routers.speech-gateway.entrypoints=websecure"
+      - "traefik.http.routers.speech-gateway.tls.certresolver=step"
+      - "traefik.http.services.speech-gateway.loadbalancer.server.port=8000"
