@@ -1,5 +1,10 @@
 numpy<2.0
-wyoming-openwakeword
-asyncio
-requests
 
+# Wyoming moderno requerido por openwakeword
+wyoming>=1.8,<2
+
+requests
+webrtcvad==2.0.10
+
+# plugin desde GitHub
+git+https://github.com/rhasspy/wyoming-openwakeword.git

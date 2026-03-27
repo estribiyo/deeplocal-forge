@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libopenblas-dev \  
     libatomic1 \
+    git \
     && rm -rf /var/lib/apt/lists/*
 COPY main.py requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
