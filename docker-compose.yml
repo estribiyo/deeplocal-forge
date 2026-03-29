@@ -64,6 +64,8 @@ x-whisper-base: &whisper-base
   volumes:
     - whisper_models:/root/.cache/whisper
   restart: unless-stopped
+  ports:
+    - "127.0.0.1:9000:9000"
   networks:
     ai_network:
       aliases:
@@ -94,6 +96,8 @@ x-coqui-base: &coqui-base
         - tts
   restart: unless-stopped
   environment: *coqui-env-base
+  ports:
+    - "127.0.0.1:5002:5002"
   volumes:
     - tts_data:/root/.local/share/tts
   labels:
@@ -308,15 +312,11 @@ services:
     build: ./speech-gateway
     container_name: speech-gateway
     profiles: ["cpu", "gpu"]
-    networks:
-      - ai_network
     environment:
       # URLs internas de tu stack de Docker
-      - WHISPER_URL=http://whisper:9000/asr
-      - OLLAMA_URL=http://ollama:11434
-      - COQUI_URL=http://coqui-tts:5002
+      - WHISPER_URL=http://127.0.0.1:9000/asr
+      - OLLAMA_URL=http://127.0.0.1:11434
+      - COQUI_URL=http://127.0.0.1:5002
       - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-qwen2.5:7b-instruct}
     restart: unless-stopped
-    ports:
-      - 10400:10400
-      - 10420:10420
+    network_mode: host
