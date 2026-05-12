@@ -336,6 +336,8 @@ class CalaveraHandler(AsyncEventHandler):
         await self.write_event(AudioStop().event())
         _LOGGER.info("✅ Respuesta de audio enviada al satellite")
 
+        self._reset_state()
+
 
 # ── Entrypoint ────────────────────────────────────────────────────────────────
 

@@ -3,6 +3,6 @@
 # Uso: Aider editor-model (automático tras /architect)
 # temperature 0.1 — casi determinista para máxima fidelidad en diffs
 
-FROM qwen2.5-coder:14b
+FROM freehuntx/qwen3-coder:14b
 PARAMETER num_ctx    12288
 PARAMETER temperature 0.1

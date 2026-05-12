@@ -304,6 +304,18 @@ services:
       - "traefik.http.routers.mcp-searxng.tls.certresolver=step"
       - "traefik.http.services.mcp-searxng.loadbalancer.server.port=8000"
 
+  openwakeword:
+    image: rhasspy/wyoming-openwakeword:latest
+    container_name: openwakeword
+    profiles: ["cpu", "gpu"]
+    networks:
+      - ai_network
+    ports:
+      - "10400:10400"
+    command:
+      --preload-model alexa
+    restart: unless-stopped
+
   speech-gateway:
     build: ./speech-gateway
     container_name: speech-gateway
@@ -311,12 +323,15 @@ services:
     networks:
       - ai_network
     environment:
-      # URLs internas de tu stack de Docker
-      - WHISPER_URL=http://whisper:9000/asr
+      - WHISPER_URL=http://whisper-asr-cpu:9000/asr
       - OLLAMA_URL=http://ollama:11434
-      - COQUI_URL=http://coqui-tts:5002
+      - COQUI_URL=http://coqui-cpu:5002
       - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-qwen2.5:7b-instruct}
     restart: unless-stopped
     ports:
-      - 10400:10400
       - 10420:10420
+    depends_on:
+      - openwakeword
+      - whisper-asr-cpu
+      - coqui-cpu
+      - ollama
