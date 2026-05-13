@@ -334,6 +334,3 @@ services:
       - 10420:10420
     depends_on:
       - openwakeword
-      - whisper-asr-cpu
-      - coqui-cpu
-      - ollama
