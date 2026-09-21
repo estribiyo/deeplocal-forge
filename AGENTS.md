@@ -9,19 +9,19 @@ It references the single source of truth for all development standards.
 - Orchestrators: Aider · Roo Code · Continue · OpenCode
 
 ## Core Rules
-See: ai-specs/specs/base-standards.mdc
+See: specs/standards/base-standards.mdc
 
 ## Backend Standards
-See: ai-specs/specs/backend-standards.mdc
+See: specs/standards/backend-standards.mdc
 
 ## Frontend Standards
-See: ai-specs/specs/frontend-standards.mdc
+See: specs/standards/frontend-standards.mdc
 
 ## Documentation Standards
-See: ai-specs/specs/documentation-standards.mdc
+See: specs/standards/documentation-standards.mdc
 
 ## Available Prompt Templates
-See: ai-specs/specs/prompts.md
+See: specs/prompts.md
 
 ## Workflow
 1. Read ARCHITECTURE.md and CONSTRAINTS.md at the start of every session
@@ -32,4 +32,4 @@ See: ai-specs/specs/prompts.md
 ## Project Context
 - ARCHITECTURE.md — adopted technical decisions (project-specific, create at project root)
 - CONSTRAINTS.md — hard constraints (project-specific, create at project root)
-- ai-specs/changes/ — feature implementation plans
+- specs/changes/ — feature implementation plans

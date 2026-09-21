@@ -192,7 +192,7 @@ up-rag:
 
 # `just init-project NAME` — inicializa un proyecto nuevo con la estructura spec-driven
 # Uso: just init-project mi-proyecto
-# Crea: ARCHITECTURE.md, CONSTRAINTS.md, ai-specs/, .aider/commands/, skills/ (symlink)
+# Crea: ARCHITECTURE.md, CONSTRAINTS.md, specs/, .aider/commands/, skills/ (symlink)
 init-project name:
     #!/bin/bash
     set -e
@@ -204,22 +204,22 @@ init-project name:
     fi
 
     echo "🚀 Inicializando proyecto: {{name}}"
-    mkdir -p "$PROJECT_DIR/ai-specs/specs"
-    mkdir -p "$PROJECT_DIR/ai-specs/changes"
+    mkdir -p "$PROJECT_DIR/specs/specs"
+    mkdir -p "$PROJECT_DIR/specs/changes"
     mkdir -p "$PROJECT_DIR/.aider/commands"
 
     # Copiar plantillas de specs
-    cp ai-specs/specs/base-standards.mdc    "$PROJECT_DIR/ai-specs/specs/"
-    cp ai-specs/specs/backend-standards.mdc "$PROJECT_DIR/ai-specs/specs/"
-    cp ai-specs/specs/frontend-standards.mdc "$PROJECT_DIR/ai-specs/specs/"
-    cp ai-specs/specs/documentation-standards.mdc "$PROJECT_DIR/ai-specs/specs/"
-    cp ai-specs/specs/api-spec.yml          "$PROJECT_DIR/ai-specs/specs/"
-    cp ai-specs/specs/data-model.md         "$PROJECT_DIR/ai-specs/specs/"
-    cp ai-specs/specs/prompts.md            "$PROJECT_DIR/ai-specs/specs/"
+    cp specs/standards/base-standards.mdc    "$PROJECT_DIR/specs/standards/"
+    cp specs/standards/backend-standards.mdc "$PROJECT_DIR/specs/standards/"
+    cp specs/standards/frontend-standards.mdc "$PROJECT_DIR/specs/standards/"
+    cp specs/standards/documentation-standards.mdc "$PROJECT_DIR/specs/standards/"
+    cp specs/api-spec.yml          "$PROJECT_DIR/specs/standards/"
+    cp specs/data-model.md         "$PROJECT_DIR/specs/standards/"
+    cp specs/prompts.md            "$PROJECT_DIR/specs/standards/"
 
     # Crear ARCHITECTURE.md y CONSTRAINTS.md desde plantillas
-    cp ai-specs/specs/ARCHITECTURE.md.template "$PROJECT_DIR/ARCHITECTURE.md"
-    cp ai-specs/specs/CONSTRAINTS.md.template  "$PROJECT_DIR/CONSTRAINTS.md"
+    cp specs/templates/ARCHITECTURE.md.template "$PROJECT_DIR/ARCHITECTURE.md"
+    cp specs/templates/CONSTRAINTS.md.template  "$PROJECT_DIR/CONSTRAINTS.md"
 
     # Copiar configuraciones de agentes
     cp AGENTS.md   "$PROJECT_DIR/"
@@ -244,7 +244,7 @@ init-project name:
     echo "   1. cd $PROJECT_DIR"
     echo "   2. Edita ARCHITECTURE.md con las decisiones iniciales de tu stack"
     echo "   3. Edita CONSTRAINTS.md con las restricciones del proyecto"
-    echo "   4. Edita ai-specs/specs/api-spec.yml con tus endpoints reales"
+    echo "   4. Edita specs/api-spec.yml con tus endpoints reales"
     echo "   5. Inicia Aider: aider (leerá .aider/commands/ automáticamente)"
     echo ""
     echo "💡 Primer flujo recomendado:"

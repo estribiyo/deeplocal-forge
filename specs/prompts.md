@@ -39,8 +39,8 @@ The plan must cover:
 4. Error handling strategy
 5. Definition of Done checklist
 
-Output format: markdown suitable for saving to ai-specs/changes/<TICKET>_backend.md
-Constraints: see CONSTRAINTS.md. Standards: see ai-specs/specs/base-standards.mdc
+Output format: markdown suitable for saving to specs/changes/<TICKET>_backend.md
+Constraints: see CONSTRAINTS.md. Standards: see specs/standards/base-standards.mdc
 ```
 
 ### Generate Frontend Implementation Plan
@@ -59,8 +59,8 @@ The plan must cover:
 5. Test specifications (unit + E2E happy path)
 6. Definition of Done checklist
 
-Output format: markdown suitable for saving to ai-specs/changes/<TICKET>_frontend.md
-Standards: see ai-specs/specs/frontend-standards.mdc
+Output format: markdown suitable for saving to specs/changes/<TICKET>_frontend.md
+Standards: see specs/standards/frontend-standards.mdc
 ```
 
 ---
@@ -173,7 +173,7 @@ Append to ARCHITECTURE.md. Only include real decisions — not obvious implement
 
 ### Query a document corpus
 ```
-[System: inject ai-specs/specs/base-standards.mdc as context]
+[System: inject specs/standards/base-standards.mdc as context]
 
 You are a documentation assistant. Answer ONLY from the provided context.
 If the answer is not in the context, say: "I cannot find this in the available documents."

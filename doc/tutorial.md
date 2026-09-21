@@ -444,7 +444,7 @@ Abrir `Configuración de VSCode` → buscar `Roo Code` → `Edit in settings.jso
   "roo-cline.openAiBaseUrl": "http://localhost:11434/v1",
   "roo-cline.openAiApiKey": "ollama",
   "roo-cline.openAiModelId": "qwen2.5-coder:14b",
-  "roo-cline.customInstructions": "Read CLAUDE.md, ARCHITECTURE.md, and CONSTRAINTS.md at the start of every task. Run the pre-LLM pipeline before making changes. Follow ai-specs/specs/base-standards.mdc."
+  "roo-cline.customInstructions": "Read CLAUDE.md, ARCHITECTURE.md, and CONSTRAINTS.md at the start of every task. Run the pre-LLM pipeline before making changes. Follow specs/standards/base-standards.mdc."
 }
 ```
 
@@ -465,7 +465,7 @@ Follow the debugging process described in the skill.
 1. Abre tu proyecto en VSCode
 2. Abre el panel de Roo Code (`Ctrl+Shift+P` → "Roo Code: Open")
 3. Carga contexto de arquitectura: menciona `@ARCHITECTURE.md @CONSTRAINTS.md` en el primer mensaje
-4. Para tareas complejas, menciona también el plan: `@ai-specs/changes/TICKET-01_backend.md`
+4. Para tareas complejas, menciona también el plan: `@specs/changes/TICKET-01_backend.md`
 
 ### Continue
 
@@ -667,7 +667,7 @@ El flujo spec-driven separa pensamiento e implementación. Evita el error más c
         ↓
 3. Revisar y aprobar la user story (tú decides)
         ↓
-4. /plan       → el arquitecto genera el plan de implementación en ai-specs/changes/
+4. /plan       → el arquitecto genera el plan de implementación en specs/changes/
         ↓
 5. Revisar y aprobar el plan (tú decides)
         ↓
@@ -683,7 +683,7 @@ El flujo spec-driven separa pensamiento e implementación. Evita el error más c
 ```
 1. Humano escribe la spec (api-spec.yml, data-model.md, ARCHITECTURE.md)
         ↓
-2. /add ARCHITECTURE.md CONSTRAINTS.md ai-specs/specs/base-standards.mdc
+2. /add ARCHITECTURE.md CONSTRAINTS.md specs/standards/base-standards.mdc
         ↓
 3. /architect [objetivo con reasoning budget]
         ↓
@@ -700,7 +700,7 @@ just init-project nombre-del-proyecto
 
 # Esto crea ../nombre-del-proyecto/ con:
 # - ARCHITECTURE.md y CONSTRAINTS.md (plantillas)
-# - ai-specs/ con todas las specs y plantillas
+# - specs/ con todas las specs y plantillas
 # - .aider/commands/ con todos los comandos personalizados
 # - skills/ copiadas
 # - AGENTS.md, CLAUDE.md, etc.
@@ -708,7 +708,7 @@ just init-project nombre-del-proyecto
 cd ../nombre-del-proyecto
 # Editar ARCHITECTURE.md con las decisiones iniciales del stack
 # Editar CONSTRAINTS.md con las restricciones del proyecto
-# Editar ai-specs/specs/api-spec.yml con los endpoints reales
+# Editar specs/api-spec.yml con los endpoints reales
 ```
 
 ---
@@ -785,9 +785,9 @@ Backend: FastAPI + SQLAlchemy (SQLite for dev). Endpoints: CRUD for tasks.
 Each task has: id (UUID), title (str, max 255), done (bool), created_at, updated_at.
 ```
 
-Aider genera el plan y lo muestra. Cópialo a `ai-specs/changes/TASK-01_backend.md`:
+Aider genera el plan y lo muestra. Cópialo a `specs/changes/TASK-01_backend.md`:
 ```
-/run cp /dev/stdin ai-specs/changes/TASK-01_backend.md
+/run cp /dev/stdin specs/changes/TASK-01_backend.md
 # (o simplemente edita el fichero manualmente con el output)
 ```
 
@@ -801,8 +801,8 @@ mkdir -p backend/tests/tasks
 
 De vuelta en Aider:
 ```
-/add ai-specs/changes/TASK-01_backend.md
-/add ai-specs/specs/backend-standards.mdc
+/add specs/changes/TASK-01_backend.md
+/add specs/standards/backend-standards.mdc
 
 /architect Think briefly (max 6 steps).
 Implement the backend following the plan in TASK-01_backend.md.
@@ -852,7 +852,7 @@ Features: list tasks, add task, mark as done, delete task.
 State: TanStack Query for server state. Styling: Tailwind CSS.
 ```
 
-Guarda el plan en `ai-specs/changes/TASK-02_frontend.md`.
+Guarda el plan en `specs/changes/TASK-02_frontend.md`.
 
 ### 11.8 Implementar el frontend
 
@@ -865,8 +865,8 @@ npm install @tanstack/react-query tailwindcss @tailwindcss/vite
 
 De vuelta en Aider:
 ```
-/add ai-specs/changes/TASK-02_frontend.md
-/add ai-specs/specs/frontend-standards.mdc
+/add specs/changes/TASK-02_frontend.md
+/add specs/standards/frontend-standards.mdc
 /read skills/frontend/vercel-react-best-practices.md
 
 /architect Think briefly (max 6 steps).
@@ -893,7 +893,7 @@ Si el Critic Pass detecta algo, corrígelo antes de dar la tarea por terminada (
 ### 11.10 Resultado
 
 Al final del ejemplo tienes:
-- `ai-specs/changes/TASK-01_backend.md` y `TASK-02_frontend.md` — los planes que guiaron la implementación
+- `specs/changes/TASK-01_backend.md` y `TASK-02_frontend.md` — los planes que guiaron la implementación
 - `ARCHITECTURE.md` actualizado con las decisiones tomadas
 - Backend: FastAPI con tests, tipos correctos, pipeline pasando
 - Frontend: React con TanStack Query, TypeScript estricto, tests de componentes
@@ -912,7 +912,7 @@ Al final del ejemplo tienes:
 ### Diseñar algo nuevo
 
 ```
-/add ARCHITECTURE.md CONSTRAINTS.md ai-specs/specs/base-standards.mdc
+/add ARCHITECTURE.md CONSTRAINTS.md specs/standards/base-standards.mdc
 /architect Think briefly (max 6 steps). Focus on the final answer.
 Goal: [describe el objetivo]
 Constraints: see CONSTRAINTS.md
@@ -958,7 +958,7 @@ Feature: [descripción]
 
 ```
 /read skills/quality/api-design-principles.md
-/add ai-specs/specs/api-spec.yml ai-specs/specs/backend-standards.mdc
+/add specs/api-spec.yml specs/standards/backend-standards.mdc
 /architect Design the API contract for: [endpoint description]
 Output: OpenAPI YAML snippet. No implementation code yet.
 ```

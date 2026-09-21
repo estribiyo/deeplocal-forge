@@ -61,7 +61,7 @@
 
 ## OpenAPI Specification
 
-Every backend service must maintain an `ai-specs/specs/api-spec.yml`:
+Every backend service must maintain an `specs/api-spec.yml`:
 
 ```yaml
 openapi: "3.0.3"

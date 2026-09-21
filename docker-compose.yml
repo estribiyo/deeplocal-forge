@@ -1,3 +1,13 @@
+x-litellm-base: &litellm-base
+  image: ghcr.io/berriai/litellm:main-latest
+  restart: unless-stopped
+  environment:
+    OLLAMA_API_BASE="http://10.0.0.10:11434"
+  networks:
+    ai_network:
+      aliases:
+        - litellm-proxy
+
 x-comfyui-base: &comfyui-base
   image: ghcr.io/lecode-official/comfyui-docker:latest
   restart: unless-stopped
@@ -123,6 +133,9 @@ networks:
     external: true
 
 services:
+  litellm-proxy:
+    <<: *litellm-base
+    profiles: ["cpu", "gpu"]
   ollama:
     <<: *ollama-base
     profiles: ["cpu"]

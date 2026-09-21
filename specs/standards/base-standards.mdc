@@ -22,15 +22,15 @@
 
 ```
 1. /enrich-us  <ticket>        → enrich user story with acceptance criteria
-2. /plan-ticket <ticket>       → generate implementation plan in ai-specs/changes/
+2. /plan-ticket <ticket>       → generate implementation plan in specs/changes/
 3. /develop    @<ticket>.md    → implement following the plan precisely
 ```
 
 ### For mature projects (Model A — human-written spec)
 
 ```
-1. Human writes spec in ai-specs/specs/ (api-spec.yml, data-model.md)
-2. /add ai-specs/specs/base-standards.mdc ARCHITECTURE.md CONSTRAINTS.md
+1. Human writes spec in specs/standards/ (api-spec.yml, data-model.md)
+2. /add specs/standards/base-standards.mdc ARCHITECTURE.md CONSTRAINTS.md
 3. /architect  [goal with reasoning budget]
 4. /develop    [implement from architect output]
 ```

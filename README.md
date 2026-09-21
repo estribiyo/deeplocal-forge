@@ -31,7 +31,7 @@ deeplocal-forge/
 ├── assets/
 │   ├── ollama/              # Modelfiles — r1-architect, qwen-editor, rag-bot
 │   └── mcp/                 # Dockerfiles de los servidores MCP
-├── ai-specs/                # Especificaciones y estándares (fuente de verdad)
+├── specs/                # Especificaciones y estándares (fuente de verdad)
 │   ├── specs/
 │   │   ├── base-standards.mdc          # Reglas core (todos los agentes la leen)
 │   │   ├── backend-standards.mdc

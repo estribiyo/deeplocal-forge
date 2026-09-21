@@ -59,7 +59,7 @@ in pages of 20 without loading the full dataset.
 5. [ ] **Tests** — Write tests before implementation (TDD order)
    - See Test Specifications below
 
-6. [ ] **API Spec** — Update `ai-specs/specs/api-spec.yml`
+6. [ ] **API Spec** — Update `specs/api-spec.yml`
    - The `/items` GET path is already templated; fill in actual schemas
 
 ---
@@ -97,6 +97,6 @@ in pages of 20 without loading the full dataset.
 - [ ] All integration tests pass (`pytest tests/items/test_router.py`)
 - [ ] Pre-LLM pipeline passes (`ruff format . && ruff check --fix . && mypy .`)
 - [ ] Critic Pass completed — no issues found
-- [ ] `ai-specs/specs/api-spec.yml` updated with actual schemas
+- [ ] `specs/api-spec.yml` updated with actual schemas
 - [ ] No `TODO` or `FIXME` left in changed files
 - [ ] PR description references this plan
