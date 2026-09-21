@@ -129,32 +129,12 @@ setup-models:
 
     just download-ollama
 
-    echo ""
-    echo "🔧 Creando instancia r1-architect..."
-    if docker exec ${CONTAINER_NAME} ollama list | grep -q "r1-architect"; then
-        echo "✅ r1-architect ya existe."
+    if docker exec ${CONTAINER_NAME} ollama list | grep -q "bge-m3:latest"; then
+        echo "✅ bge-m3:latest ya existe."
     else
-        docker exec ${CONTAINER_NAME} ollama create r1-architect -f /modelfiles/Modelfile.architect
-        echo "✅ r1-architect creado."
-    fi
-
-    echo "🔧 Creando instancia qwen-editor..."
-    if docker exec ${CONTAINER_NAME} ollama list | grep -q "qwen-editor"; then
-        echo "✅ qwen-editor ya existe."
-    else
-        docker exec ${CONTAINER_NAME} ollama create qwen-editor -f /modelfiles/Modelfile.editor
-        echo "✅ qwen-editor creado."
-    fi
-
-    echo "🔧 Descargando modelo de embeddings..."
-    docker exec ${CONTAINER_NAME} ollama pull nomic-embed-text
-
-    echo "🔧 Creando instancia rag-bot..."
-    if docker exec ${CONTAINER_NAME} ollama list | grep -q "rag-bot"; then
-        echo "✅ rag-bot ya existe."
-    else
-        docker exec ${CONTAINER_NAME} ollama create rag-bot -f /modelfiles/Modelfile.rag
-        echo "✅ rag-bot creado."
+        echo "🔧 Descargando modelo de embeddings..."
+        docker exec ${CONTAINER_NAME} ollama pull bge-m3:latestr
+        echo "✅ bge-m3:latest descargado."
     fi
 
     echo ""
